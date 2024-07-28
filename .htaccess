@@ -1,0 +1,33 @@
+# Mengaktifkan modul rewrite
+RewriteEngine On
+
+# Redirect dari www ke non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Redirect dari http ke https
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Pengaturan URL rewriting agar index.php tidak muncul di URL
+RewriteCond %{THE_REQUEST} /index\.php [NC]
+RewriteRule ^(.*)index\.php(.*)$ /$1$2 [R=301,L]
+
+# Menyembunyikan ekstensi .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Jika file atau direktori tidak ada, arahkan ke index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L]
+
+# Melindungi file konfigurasi
+<Files config.php>
+Order Allow,Deny
+Deny from all
+</Files>
+
+# Pengaturan halaman kesalahan khusus
+ErrorDocument 404 /404.php
